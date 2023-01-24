@@ -1,0 +1,1 @@
+(()=>{"use strict";console.log(void console.log("its a gameboard")),console.log(123)})();
