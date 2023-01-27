@@ -15,7 +15,7 @@
   \**************************/
 /***/ ((module) => {
 
-eval("function gameBoard(a) {\n  console.log(a * 2);\n}\nmodule.exports = gameBoard;\n\n//# sourceURL=webpack://battleship/./src/gameBoard.js?");
+eval("var gameBoard = function gameBoard() {\n  var board = {};\n  for (var i = 0; i < 10; i++) {\n    for (var j = 0; j < 10; j++) {\n      board[\"\".concat(i).concat(j)] = {\n        hit: null,\n        occupy: null\n      };\n    }\n  }\n  var shipClass = {\n    class1: 5,\n    class2: 4,\n    class3: 3\n  };\n  var placeShip = function placeShip(coOrd, alignment, type) {\n    console.log(type);\n    var size = shipClass[type];\n    type = ship(size, type);\n    console.log(type);\n    var xAxis = coOrd.split(\"\")[0];\n    var yAxis = coOrd.split(\"\")[1];\n    if (alignment === \"horizontal\") {\n      for (var _j = yAxis; _j < size; _j++) {\n        board[\"\".concat(xAxis).concat(_j)].occupy = type;\n      }\n    } else if (alignment === \"vertical\") {\n      for (var _i = xAxis; _i < size; _i++) {\n        board[\"\".concat(_i).concat(yAxis)].occupy = type;\n      }\n    }\n    return {\n      type: type\n    };\n  };\n  var recieveAttack = function recieveAttack(coOrd) {\n    if (board[coOrd].occupy !== null) {\n      board[coOrd].occupy.hit();\n      board[coOrd].hit = 'hit';\n    } else {\n      board[coOrd].hit = \"miss\";\n    }\n  };\n  return {\n    placeShip: placeShip,\n    board: board,\n    recieveAttack: recieveAttack\n  };\n};\nmodule.exports = gameBoard;\n\n//# sourceURL=webpack://battleship/./src/gameBoard.js?");
 
 /***/ }),
 
@@ -26,7 +26,17 @@ eval("function gameBoard(a) {\n  console.log(a * 2);\n}\nmodule.exports = gameBo
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _gameBoard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameBoard */ \"./src/gameBoard.js\");\n/* harmony import */ var _gameBoard__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_gameBoard__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.css */ \"./src/style.css\");\n\n\nconsole.log(_gameBoard__WEBPACK_IMPORTED_MODULE_0___default()());\nconsole.log(123);\n\n//# sourceURL=webpack://battleship/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ship */ \"./src/ship.js\");\n/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_ship__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _gameBoard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameBoard */ \"./src/gameBoard.js\");\n/* harmony import */ var _gameBoard__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_gameBoard__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style.css */ \"./src/style.css\");\n\n\n\n\n//# sourceURL=webpack://battleship/./src/index.js?");
+
+/***/ }),
+
+/***/ "./src/ship.js":
+/*!*********************!*\
+  !*** ./src/ship.js ***!
+  \*********************/
+/***/ ((module) => {
+
+eval("var ship = function ship(length, name) {\n  this.name = name;\n  var hits = 0;\n  var hit = function hit() {\n    hits++;\n  };\n  var isSunk = function isSunk() {\n    if (length === hits) {\n      return true;\n    } else return false;\n  };\n  return {\n    hit: hit,\n    isSunk: isSunk,\n    name: name\n  };\n};\nmodule.exports = ship;\n\n//# sourceURL=webpack://battleship/./src/ship.js?");
 
 /***/ }),
 
