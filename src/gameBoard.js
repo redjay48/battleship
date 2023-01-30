@@ -104,3 +104,5 @@ const gameBoard = function () {
     recieveAttack,
   };
 };
+
+module.exports = gameBoard
