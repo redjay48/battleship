@@ -6,10 +6,14 @@ const gameBoard = function () {
     }
   }
   const shipClass = {
-    class1: 5,
-    class2: 4,
-    class3: 3,
+    carrier: 5,
+    battleship: 4,
+    cruiser: 3,
+    submarine: 3,
+    destroyer: 2,
   };
+
+  const alignment = ["horizontal", "vertical"];
 
   let totalOccupy = 0;
   let totalShips = [];
@@ -18,30 +22,33 @@ const gameBoard = function () {
 
   const placeShip = (coOrd, alignment, type) => {
     const size = shipClass[type];
-    type = ship(size, type);
+    type = new ship(size, type);
     totalShips.push(type);
-    console.log("totalships",totalShips);
-    const xAxis = coOrd.split("")[0];
-    const yAxis = coOrd.split("")[1];
+    console.log(size);
+    console.log("totalships", totalShips);
+    const xAxis = parseInt(coOrd.split("")[0]);
+    const yAxis = parseInt(coOrd.split("")[1]);
     if (alignment === "horizontal") {
-      for (let j = yAxis; j < size; j++) {
+      for (let j = yAxis; j < yAxis + size; j++) {
         board[`${xAxis}${j}`].occupy = type;
         totalOccupy++;
       }
-    } else if (alignment === "vertical") {
-      for (let i = xAxis; i < size; i++) {
+    } if (alignment === "vertical") {
+      for (let i = xAxis; i < xAxis + size; i++) {
         board[`${i}${yAxis}`].occupy = type;
         totalOccupy++;
       }
     }
-    return {type};
   };
   const recieveAttack = (coOrd) => {
-    if (board[coOrd].occupy !== null ) {
-      if(board[coOrd].hit !== 'hit') {
+    if (board[coOrd].occupy !== null) {
+      if (board[coOrd].hit !== "hit") {
         board[coOrd].occupy.hit();
-        board[coOrd].hit = 'hit';
+        board[coOrd].hit = "hit";
+        legalMoves(coOrd);
         totalHits++;
+      } else {
+        return;
       }
     } else {
       board[coOrd].hit = "miss";
@@ -52,25 +59,44 @@ const gameBoard = function () {
   };
 
   const trackHit = (coOrd) => {
-    if(board[coOrd].hit === 'hit') {
-      console.log("It'a a Hit")
-    } else if (board[coOrd].hit === 'miss') {
+    if (board[coOrd].hit === "hit") {
+      console.log("It'a a Hit");
+    } else if (board[coOrd].hit === "miss") {
       console.log("It's a Miss");
     }
   };
 
   const reportSunk = () => {
     let count = 0;
-    for(let i = 0; i < totalShips.length; i++) {
-      if(totalShips[i].isSunk()) {
+    for (let i = 0; i < totalShips.length; i++) {
+      if (totalShips[i].isSunk()) {
         console.log(`${totalShips[i].name} has been sunk`);
         count++;
       }
     }
-    if(count === totalShips.length) {
-      console.log('all ships have been sunk');
+    if (count === totalShips.length) {
+      console.log("all ships have been sunk");
     }
-  }
+  };
+
+
+  const legalMoves = (coOrd) => {
+    const i = parseInt(coOrd.split("")[0]);
+    const j = parseInt(coOrd.split("")[1]);
+    console.log("i and j", i, j);
+    if (i + 1 < 10 && j + 1 < 10) {
+      board[`${i + 1}${j + 1}`].hit = "block";
+    }
+    if (i - 1 >= 0 && j - 1 >= 0) {
+      board[`${i - 1}${j - 1}`].hit = "block";
+    }
+    if (i + 1 < 10 && j - 1 >= 0) {
+      board[`${i + 1}${j - 1}`].hit = "block";
+    }
+    if (i - 1 >= 0 && j + 1 < 10) {
+      board[`${i - 1}${j + 1}`].hit = "block";
+    }
+  };
 
   return {
     placeShip,
@@ -78,6 +104,3 @@ const gameBoard = function () {
     recieveAttack,
   };
 };
-
-
-module.exports = gameBoard;
