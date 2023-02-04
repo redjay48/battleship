@@ -1,15 +1,5 @@
 const rows = document.querySelectorAll(".rows");
 const cells = document.querySelectorAll(".cells");
-const ship1 = document.querySelector(".ship");
-cells.forEach((cell) => {
-  let cellNumber = document.createTextNode(`${cell.classList[1]}`);
-  cell.append(cellNumber);
-  // console.log(cellNumber);
-});
-
-// ship1.addEventListener('click', (e)=> {
-//   console.log(e.target.parentNode);
-// })
 
 const shipClass = {
   carrier: 5,
@@ -82,4 +72,34 @@ ships.forEach((ship) => {
   
 });
 
-///placement left
+///placement for a single ship
+
+const ship1 = document.createElement("div");
+
+ship1.setAttribute("draggable", "true");
+ship1.style.overflow = "visible";
+ship1.classList.add("ship");
+ship1.style.height = `${33 + 36 * (4 - 1)}px`;
+
+cells[12].appendChild(ship1);
+
+ship1.addEventListener("click", changeAlignment);
+
+ship1.addEventListener("dragleave", () => {
+  // let currentShip = ship1;
+  let previousParent = ship1.parentNode;
+  cells.forEach((cell) => {
+    cell.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      if (!e.target.classList.contains("ship")) {
+        let newParent = e.target;
+        console.log(newParent);
+        if (newParent !== previousParent && !newParent.contains(ship1)) {
+          previousParent.removeChild(ship1);
+          newParent.append(ship1);
+        }
+        previousParent = newParent;
+      }
+    });
+  });
+});
