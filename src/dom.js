@@ -103,3 +103,39 @@ ship1.addEventListener("dragleave", () => {
     });
   });
 });
+
+
+// function to enter an array and return an array with surrounding numbers
+// for vertical ship only
+function surround(array) {
+  let newArray = [];
+  let len = array.length;
+  let firstNum = array[0];
+  let lastNum = array[len - 1];
+  findBorderNum(firstNum, "first", newArray);
+  for (let i = 0; i < len; i++) {
+    newArray.push((array[i] - 1).toString());
+    newArray.push((array[i] + 1).toString());
+  }
+  findBorderNum(lastNum, "last", newArray);
+  console.log(newArray);
+}
+
+function findBorderNum(num, pos, array) {
+  let numString = num.toString();
+  const i = parseInt(numString.split("")[0]);
+  const j = parseInt(numString.split("")[1]);
+  if (pos === "first") {
+    array.push("".concat(i - 1, j - 1));
+    array.push("".concat(i - 1, j));
+    array.push("".concat(i - 1, j + 1));
+  }
+  if (pos === "last") {
+    array.push("".concat(i + 1, j - 1));
+    array.push("".concat(i + 1, j));
+    array.push("".concat(i + 1, j + 1));
+  }
+  return array;
+}
+
+//for horizontal ship
