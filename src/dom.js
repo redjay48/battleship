@@ -164,3 +164,62 @@ function findBorderNumVertical(num, pos, array) {
 }
 
 //for horizontal ship
+function surroundHorizontal(array) {
+  let newArray = [];
+  let len = array.length;
+  let firstNum = array[0];
+  let lastNum = array[len - 1];
+
+  //Add numbers in the front
+  findBorderNumHorizontal(firstNum, "first", newArray);
+
+  //Add adjacent numbers
+  for (let i = 0; i < len; i++) {
+    if (parseInt(array[i] - 10) >= 0) {
+      newArray.push((array[i] - 10).toString());
+      console.log(array[i] - 10);
+    }
+    if (parseInt(array[i] + 10) < 100) {
+      newArray.push((array[i] + 10).toString());
+    }
+  }
+
+  //Add number in the back
+  findBorderNumHorizontal(lastNum, "last", newArray);
+
+  // Add '0' to single digit number to match the cell position class
+  newArray.forEach((element) => {
+    if (parseInt(element) < 10 && parseInt(element) >= 0) {
+      newArray.splice(newArray.indexOf(element), 1, "".concat("0", element));
+    }
+  });
+
+  return newArray;
+}
+
+function findBorderNumHorizontal(num, pos, array) {
+  if (pos === "first") {
+    if (num % 10 !== 0) {
+      array.push((num - 1).toString());
+      if (num - 1 - 10 >= 0) {
+        array.push((num - 1 - 10).toString());
+      }
+      if (num - 1 + 10 < 100) {
+        array.push((num - 1 + 10).toString());
+      }
+    }
+  }
+  if (pos === "last") {
+    if (num % 10 !== 9) {
+      array.push((num + 1).toString());
+      if (num + 1 - 10 >= 0) {
+        array.push((num + 1 - 10).toString());
+      }
+      if (num + 1 + 10 < 100) {
+        array.push((num + 1 + 10).toString());
+      }
+    }
+  }
+  return array;
+}
+
