@@ -107,33 +107,58 @@ ship1.addEventListener("dragleave", () => {
 
 // function to enter an array and return an array with surrounding numbers
 // for vertical ship only
-function surround(array) {
+function surroundVertical(array) {
   let newArray = [];
   let len = array.length;
   let firstNum = array[0];
   let lastNum = array[len - 1];
-  findBorderNum(firstNum, "first", newArray);
+  findBorderNumVertical(firstNum, "first", newArray);
   for (let i = 0; i < len; i++) {
-    newArray.push((array[i] - 1).toString());
-    newArray.push((array[i] + 1).toString());
+    if (array[i] % 10 !== 0) {
+      newArray.push((array[i] - 1).toString());
+    }
+    if (array[i] % 10 !== 9) {
+      newArray.push((array[i] + 1).toString());
+    }
   }
-  findBorderNum(lastNum, "last", newArray);
-  console.log(newArray);
+  findBorderNumVertical(lastNum, "last", newArray);
+
+  newArray.forEach((element) => {
+    if (parseInt(element) < 10 && parseInt(element) >= 0) {
+      newArray.splice(newArray.indexOf(element), 1, "".concat("0", element));
+    }
+  });
+
+  return newArray;
 }
 
-function findBorderNum(num, pos, array) {
-  let numString = num.toString();
-  const i = parseInt(numString.split("")[0]);
-  const j = parseInt(numString.split("")[1]);
+function findBorderNumVertical(num, pos, array) {
+  // let numString = num.toString();
+  // const i = parseInt(numString.split("")[0]);
+  // const j = parseInt(numString.split("")[1]);
   if (pos === "first") {
-    array.push("".concat(i - 1, j - 1));
-    array.push("".concat(i - 1, j));
-    array.push("".concat(i - 1, j + 1));
+    if (num > 9) {
+      if (num % 10 !== 0) {
+        array.push((num - 11).toString());
+      }
+      array.push((num - 10).toString());
+
+      if (num % 10 !== 9) {
+        array.push((num - 9).toString());
+      }
+    }
   }
+
   if (pos === "last") {
-    array.push("".concat(i + 1, j - 1));
-    array.push("".concat(i + 1, j));
-    array.push("".concat(i + 1, j + 1));
+    if (num < 90) {
+      if (num % 10 !== 0) {
+        array.push((num + 9).toString());
+      }
+      array.push((num + 10).toString());
+      if (num % 10 !== 9) {
+        array.push((num + 11).toString());
+      }
+    }
   }
   return array;
 }
