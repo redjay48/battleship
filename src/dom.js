@@ -105,6 +105,58 @@ ship1.addEventListener("dragleave", () => {
 });
 
 
+cells.forEach((cell) => {
+  if (cell.children[0] !== undefined) {
+    if (
+      cell.children[0].classList.contains("vertical") &&
+      cell.parentNode.parentNode.id === "grid-1"
+    ) {
+      domDisplayShip(cell, 4, "vertical");
+    } else {
+      domDisplayShip(cell, 4, "horizontal");
+    }
+  }
+});
+
+function domDisplayShip(cell, len, alignment) {
+  let shipCells = shipCellArray(cell.classList[1], alignment, len);
+  console.log(shipCells);
+  cells.forEach((cell) => {
+    for (let i = 0; i < shipCells.length; i++) {
+      if (
+        cell.classList[1] === shipCells[i].toString() &&
+        cell.parentNode.parentNode.id === "grid-1"
+      ) {
+        console.log(cell.classList[1]);
+        cell.classList.add("occupy");
+        console.log("cell class", cell.classList[1]);
+        console.log("ship cells", shipCells[i].toString());
+      }
+    }
+    if (alignment === "vertical") {
+      let blockedCells = surroundVertical(shipCells);
+      displayBlocked(blockedCells);
+    } else if (alignment === "horizontal") {
+      let blockedCells = surroundHorizontal(shipCells);
+      displayBlocked(blockedCells);
+    }
+  });
+}
+
+function displayBlocked(array) {
+  cells.forEach((cell) => {
+    for (let i = 0; i < array.length; i++) {
+      if (
+        cell.classList[1] === array[i] &&
+        cell.parentNode.parentNode.id === "grid-1"
+      ) {
+        cell.classList.add("blocked");
+      }
+    }
+  });
+}
+
+
 // function to enter an array and return an array with surrounding numbers
 // for vertical ship only
 function surroundVertical(array) {
@@ -223,3 +275,19 @@ function findBorderNumHorizontal(num, pos, array) {
   return array;
 }
 
+//make an array for the cells that the ship occupies
+function shipCellArray(pos, alignment, len) {
+  let newArray = [];
+  for (let i = 0; i < len; i++) {
+    if (alignment === "vertical") {
+      newArray.push(parseInt(pos) + 10 * i);
+    } else if (alignment === "horizontal") {
+      newArray.push(parseInt(pos) + 1 * i);
+    }
+  }
+  return newArray;
+}
+
+//make ship factory for DOM
+
+//omit cell classes that don't have ship or surround ship
