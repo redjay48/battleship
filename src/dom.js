@@ -28,13 +28,12 @@ for (let bship in shipClass) {
   if (randomNum + length < 100 && !used.includes(randomNum)) {
     used.push(randomNum);
     cells[randomNum].append(bship);
-    cells[randomNum].classList.add('holder');
+    cells[randomNum].classList.add("holder");
   }
   bship.addEventListener("click", changeAlignment);
 }
 
 function changeOrientation(e) {
-
   if (parseInt(e.target.style.height) > parseInt(e.target.style.width)) {
     let temp = e.target.style.height;
     e.target.style.height = e.target.style.width;
@@ -53,46 +52,56 @@ function addOrientationClass(e) {
     e.target.classList.add("horizontal");
     domDisplayShip(cell, 4, "vertical", false);
     domDisplayShip(cell, 4, "horizontal", true);
-    
   } else if (e.target.classList.contains("horizontal")) {
     e.target.classList.remove("horizontal");
     e.target.classList.add("vertical");
     domDisplayShip(cell, 4, "horizontal", false);
     domDisplayShip(cell, 4, "vertical", true);
-
   }
 }
 
 const ships = document.querySelectorAll(".ship");
 
 ships.forEach((ship) => {
-  ship.addEventListener('dragleave', () => {
+  ship.addEventListener("dragleave", () => {
     let currentShip = ship;
     cells.forEach((cell) => {
       cell.addEventListener("dragenter", (e) => {
         let parent = currentShip.parentNode;
-        let newShip = document.createElement('div');
-        newShip.classList.add('ship');
+        let newShip = document.createElement("div");
+        newShip.classList.add("ship");
         e.target.append(currentShip);
-        parent.childNodes[0].classList.remove('ship');
+        parent.childNodes[0].classList.remove("ship");
       });
     });
-  })
-  
+  });
 });
 
 ///placement for a single ship
+// factory for ship
+function createShip(id, orientation, size) {
+  const ship = document.createElement("div");
+  ship.setAttribute("draggable", "true");
+  ship.classList.add("ship");
+  ship.classList.add(orientation);
+  ship.setAttribute("id", id);
+  if (orientation === "horizontal") {
+    ship.style.width = `${33 + 36 * (size - 1)}px`;
+  } else {
+    ship.style.height = `${33 + 36 * (size - 1)}px`;
+  }
+  return ship;
+}
 
-const ship1 = document.createElement("div");
+const anotherShip = createShip("anothership", "horizontal", 2);
+const battleship = createShip("battleship", "vertical", 4);
 
-ship1.setAttribute("draggable", "true");
-ship1.style.overflow = "visible";
-ship1.classList.add("ship");
-ship1.style.height = `${33 + 36 * (4 - 1)}px`;
+cells[12].appendChild(battleship);
 
-cells[12].appendChild(ship1);
-
-ship1.addEventListener("click", changeAlignment);
+battleship.addEventListener("click", (e) => {
+  changeOrientation(e);
+  addOrientationClass(e);
+});
 
 ship1.addEventListener("dragleave", () => {
   // let currentShip = ship1;
@@ -112,7 +121,6 @@ ship1.addEventListener("dragleave", () => {
     });
   });
 });
-
 
 cells.forEach((cell) => {
   if (cell.children[0] !== undefined) {
@@ -164,7 +172,6 @@ function displayBlocked(array) {
     }
   });
 }
-
 
 // function to enter an array and return an array with surrounding numbers
 // for vertical ship only
