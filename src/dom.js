@@ -33,13 +33,12 @@ for (let bship in shipClass) {
   bship.addEventListener("click", changeAlignment);
 }
 
-function changeAlignment(e) {
+function changeOrientation(e) {
+
   if (parseInt(e.target.style.height) > parseInt(e.target.style.width)) {
     let temp = e.target.style.height;
     e.target.style.height = e.target.style.width;
     e.target.style.width = temp;
-    let vertical = true;
-    // console.log(e.target);
   } else {
     let temp = e.target.style.width;
     e.target.style.width = e.target.style.height;
@@ -47,12 +46,22 @@ function changeAlignment(e) {
   }
 }
 
-//block surrounding cells of the ship
-// function blockPosition(num, len) {
-//   const i = parseInt(num.split("")[0]);
-//   const j = parseInt(num.split("")[1]);
+function addOrientationClass(e) {
+  let cell = e.target.parentNode;
+  if (e.target.classList.contains("vertical")) {
+    e.target.classList.remove("vertical");
+    e.target.classList.add("horizontal");
+    domDisplayShip(cell, 4, "vertical", false);
+    domDisplayShip(cell, 4, "horizontal", true);
+    
+  } else if (e.target.classList.contains("horizontal")) {
+    e.target.classList.remove("horizontal");
+    e.target.classList.add("vertical");
+    domDisplayShip(cell, 4, "horizontal", false);
+    domDisplayShip(cell, 4, "vertical", true);
 
-// }
+  }
+}
 
 const ships = document.querySelectorAll(".ship");
 
