@@ -103,18 +103,16 @@ battleship.addEventListener("click", (e) => {
   addOrientationClass(e);
 });
 
-ship1.addEventListener("dragleave", () => {
-  // let currentShip = ship1;
-  let previousParent = ship1.parentNode;
+battleship.addEventListener("dragleave", () => {
+  let previousParent = battleship.parentNode;
   cells.forEach((cell) => {
     cell.addEventListener("dragenter", (e) => {
       e.preventDefault();
       if (!e.target.classList.contains("ship")) {
         let newParent = e.target;
-        console.log(newParent);
-        if (newParent !== previousParent && !newParent.contains(ship1)) {
-          previousParent.removeChild(ship1);
-          newParent.append(ship1);
+        if (newParent !== previousParent && !newParent.contains(battleship)) {
+          previousParent.removeChild(battleship);
+          newParent.append(battleship);
         }
         previousParent = newParent;
       }
@@ -122,52 +120,91 @@ ship1.addEventListener("dragleave", () => {
   });
 });
 
+// test another ship for drag and drop over occupied or blocked cells
+
+// cells[72].appendChild(anothership);
+
+//remove surround cells class when ship is dragged
+battleship.addEventListener("dragstart", (e) => {
+  domDisplay(e.target.parentNode, false);
+});
+
+//add surround cells class when ship is dropped
+battleship.addEventListener("dragend", (e) => {
+  e.preventDefault();
+  domDisplay(e.target.parentNode, true);
+});
+
+//surround ship cells when dom is loaded
 cells.forEach((cell) => {
   if (cell.children[0] !== undefined) {
     if (
       cell.children[0].classList.contains("vertical") &&
       cell.parentNode.parentNode.id === "grid-1"
     ) {
-      domDisplayShip(cell, 4, "vertical");
+      domDisplayShip(cell, 4, "vertical", true);
     } else {
-      domDisplayShip(cell, 4, "horizontal");
+      domDisplayShip(cell, 4, "horizontal", true);
     }
   }
 });
 
-function domDisplayShip(cell, len, alignment) {
-  let shipCells = shipCellArray(cell.classList[1], alignment, len);
-  console.log(shipCells);
+function domDisplay(cell, boolean) {
+  if (cell.children[0] !== undefined) {
+    if (
+      cell.children[0].classList.contains("vertical") &&
+      cell.parentNode.parentNode.id === "grid-1"
+    ) {
+      domDisplayShip(cell, 4, "vertical", boolean);
+    } else {
+      domDisplayShip(cell, 4, "horizontal", boolean);
+    }
+  }
+}
+
+function domDisplayShip(cell, len, orientation, boolean) {
+  let shipCells = shipCellArray(cell.classList[1], orientation, len);
   cells.forEach((cell) => {
     for (let i = 0; i < shipCells.length; i++) {
       if (
-        cell.classList[1] === shipCells[i].toString() &&
-        cell.parentNode.parentNode.id === "grid-1"
+        parseInt(cell.classList[1]) === shipCells[i] &&
+        cell.parentNode.parentNode.id === "grid-1" &&
+        boolean === true
       ) {
-        console.log(cell.classList[1]);
         cell.classList.add("occupy");
-        console.log("cell class", cell.classList[1]);
-        console.log("ship cells", shipCells[i].toString());
+      } else if (
+        parseInt(cell.classList[1]) === shipCells[i] &&
+        cell.parentNode.parentNode.id === "grid-1" &&
+        boolean === false
+      ) {
+        cell.classList.remove("occupy");
       }
     }
-    if (alignment === "vertical") {
+    if (orientation === "vertical") {
       let blockedCells = surroundVertical(shipCells);
-      displayBlocked(blockedCells);
-    } else if (alignment === "horizontal") {
+      displayBlocked(blockedCells, boolean);
+    } else if (orientation === "horizontal") {
       let blockedCells = surroundHorizontal(shipCells);
-      displayBlocked(blockedCells);
+      displayBlocked(blockedCells, boolean);
     }
   });
 }
 
-function displayBlocked(array) {
+function displayBlocked(array, boolean) {
   cells.forEach((cell) => {
     for (let i = 0; i < array.length; i++) {
       if (
         cell.classList[1] === array[i] &&
-        cell.parentNode.parentNode.id === "grid-1"
+        cell.parentNode.parentNode.id === "grid-1" &&
+        boolean === true
       ) {
         cell.classList.add("blocked");
+      } else if (
+        cell.classList[1] === array[i] &&
+        cell.parentNode.parentNode.id === "grid-1" &&
+        boolean === false
+      ) {
+        cell.classList.remove("blocked");
       }
     }
   });
@@ -201,9 +238,6 @@ function surroundVertical(array) {
 }
 
 function findBorderNumVertical(num, pos, array) {
-  // let numString = num.toString();
-  // const i = parseInt(numString.split("")[0]);
-  // const j = parseInt(numString.split("")[1]);
   if (pos === "first") {
     if (num > 9) {
       if (num % 10 !== 0) {
@@ -245,7 +279,6 @@ function surroundHorizontal(array) {
   for (let i = 0; i < len; i++) {
     if (parseInt(array[i] - 10) >= 0) {
       newArray.push((array[i] - 10).toString());
-      console.log(array[i] - 10);
     }
     if (parseInt(array[i] + 10) < 100) {
       newArray.push((array[i] + 10).toString());
@@ -292,12 +325,12 @@ function findBorderNumHorizontal(num, pos, array) {
 }
 
 //make an array for the cells that the ship occupies
-function shipCellArray(pos, alignment, len) {
+function shipCellArray(pos, orientation, len) {
   let newArray = [];
   for (let i = 0; i < len; i++) {
-    if (alignment === "vertical") {
+    if (orientation === "vertical") {
       newArray.push(parseInt(pos) + 10 * i);
-    } else if (alignment === "horizontal") {
+    } else if (orientation === "horizontal") {
       newArray.push(parseInt(pos) + 1 * i);
     }
   }
@@ -307,3 +340,7 @@ function shipCellArray(pos, alignment, len) {
 //make ship factory for DOM
 
 //omit cell classes that don't have ship or surround ship
+
+//make factory for all functions including ship, length, placement, occupying cells and blocked cells
+//function that doesn't allow ship to be placed in cells that are occupied or blocked
+//function to place all ships randomly by avoiding occupied or blocked cells
