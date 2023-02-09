@@ -50,16 +50,16 @@ function addOrientationClass(e) {
   if (e.target.classList.contains("vertical")) {
     e.target.classList.remove("vertical");
     e.target.classList.add("horizontal");
-    domDisplayShip(cell, 4, "vertical", false);
-    domDisplayShip(cell, 4, "horizontal", true);
+    console.log(cell.children[0].dataset.length);
+    domDisplayShip(cell, cell.children[0].dataset.length, "vertical", false);
+    domDisplayShip(cell, cell.children[0].dataset.length, "horizontal", true);
   } else if (e.target.classList.contains("horizontal")) {
     e.target.classList.remove("horizontal");
     e.target.classList.add("vertical");
-    domDisplayShip(cell, 4, "horizontal", false);
-    domDisplayShip(cell, 4, "vertical", true);
+    domDisplayShip(cell, cell.children[0].dataset.length, "horizontal", false);
+    domDisplayShip(cell, cell.children[0].dataset.length, "vertical", true);
   }
 }
-
 const ships = document.querySelectorAll(".ship");
 
 ships.forEach((ship) => {
@@ -85,6 +85,8 @@ function createShip(id, orientation, size) {
   ship.classList.add("ship");
   ship.classList.add(orientation);
   ship.setAttribute("id", id);
+  ship.setAttribute("data-length", `${size}`);
+  console.log(ship.getAttribute("data-length"));
   if (orientation === "horizontal") {
     ship.style.width = `${33 + 36 * (size - 1)}px`;
   } else {
@@ -93,47 +95,90 @@ function createShip(id, orientation, size) {
   return ship;
 }
 
-const anotherShip = createShip("anothership", "horizontal", 2);
+const anothership = createShip("anothership", "horizontal", 2);
 const battleship = createShip("battleship", "vertical", 4);
 
 cells[12].appendChild(battleship);
+cells[72].appendChild(anothership);
 
-battleship.addEventListener("click", (e) => {
-  changeOrientation(e);
-  addOrientationClass(e);
-});
+shipFns(battleship);
+shipFns(anothership);
 
-battleship.addEventListener("dragleave", () => {
-  let previousParent = battleship.parentNode;
+function shipFns(ship) {
+  shipOrientation(ship);
+  shipPlacement(ship);
+  shipPerimeter(ship);
+}
+
+function shipOrientation(ship) {
+  ship.addEventListener("click", (e) => {
+    changeOrientation(e);
+    addOrientationClass(e);
+  });
+}
+
+// function shipPlacement(ship) {
+//   ship.addEventListener("dragleave", () => {
+//     let previousParent = ship.parentNode;
+//     cells.forEach((cell) => {
+//       cell.addEventListener("dragenter", (e) => {
+//         e.preventDefault();
+//         console.log(e.target.classList);
+//         if (!e.target.classList.contains("ship")) {
+//           let newParent = e.target;
+//           console.log("newparent", newParent);
+//           if (
+//             newParent !== previousParent &&
+//             !newParent.contains(ship) &&
+//             !newParent.classList.contains("blocked") &&
+//             !newParent.classList.contains("occupy")
+//           ) {
+//             previousParent.removeChild(ship);
+//             newParent.append(ship);
+//           }
+//           previousParent = newParent;
+//         }
+//       });
+//     });
+//   });
+// }
+
+function shipPlacement(ship) {
   cells.forEach((cell) => {
-    cell.addEventListener("dragenter", (e) => {
+    cell.addEventListener("dragover", (e) => {
       e.preventDefault();
-      if (!e.target.classList.contains("ship")) {
-        let newParent = e.target;
-        if (newParent !== previousParent && !newParent.contains(battleship)) {
-          previousParent.removeChild(battleship);
-          newParent.append(battleship);
-        }
-        previousParent = newParent;
+    });
+    cell.addEventListener("drop", (e) => {
+      e.preventDefault();
+      let newParent = e.target;
+      if (
+        newParent !== ship.parentNode &&
+        !newParent.contains(ship) &&
+        !newParent.classList.contains("blocked") &&
+        !newParent.classList.contains("occupy")
+      ) {
+        ship.parentNode.removeChild(ship);
+        newParent.append(ship);
+        ship.parentNode = newParent;
       }
     });
   });
-});
+}
 
 // test another ship for drag and drop over occupied or blocked cells
 
-// cells[72].appendChild(anothership);
+function shipPerimeter(ship) {
+  //remove surround cells class when ship is dragged
+  ship.addEventListener("dragstart", (e) => {
+    domDisplay(e.target.parentNode, false);
+  });
 
-//remove surround cells class when ship is dragged
-battleship.addEventListener("dragstart", (e) => {
-  domDisplay(e.target.parentNode, false);
-});
-
-//add surround cells class when ship is dropped
-battleship.addEventListener("dragend", (e) => {
-  e.preventDefault();
-  domDisplay(e.target.parentNode, true);
-});
+  //add surround cells class when ship is dropped
+  ship.addEventListener("dragend", (e) => {
+    e.preventDefault();
+    domDisplay(e.target.parentNode, true);
+  });
+}
 
 //surround ship cells when dom is loaded
 cells.forEach((cell) => {
@@ -142,9 +187,9 @@ cells.forEach((cell) => {
       cell.children[0].classList.contains("vertical") &&
       cell.parentNode.parentNode.id === "grid-1"
     ) {
-      domDisplayShip(cell, 4, "vertical", true);
+      domDisplayShip(cell, cell.children[0].dataset.length, "vertical", true);
     } else {
-      domDisplayShip(cell, 4, "horizontal", true);
+      domDisplayShip(cell, cell.children[0].dataset.length, "horizontal", true);
     }
   }
 });
@@ -344,3 +389,6 @@ function shipCellArray(pos, orientation, len) {
 //make factory for all functions including ship, length, placement, occupying cells and blocked cells
 //function that doesn't allow ship to be placed in cells that are occupied or blocked
 //function to place all ships randomly by avoiding occupied or blocked cells
+//fix issue with lag in drag and drop possibly from dragenter
+
+//fix issue with lag in drag and drop possibly from dragenter
