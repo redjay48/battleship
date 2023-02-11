@@ -117,51 +117,37 @@ function shipOrientation(ship) {
   });
 }
 
-// function shipPlacement(ship) {
-//   ship.addEventListener("dragleave", () => {
-//     let previousParent = ship.parentNode;
-//     cells.forEach((cell) => {
-//       cell.addEventListener("dragenter", (e) => {
-//         e.preventDefault();
-//         console.log(e.target.classList);
-//         if (!e.target.classList.contains("ship")) {
-//           let newParent = e.target;
-//           console.log("newparent", newParent);
-//           if (
-//             newParent !== previousParent &&
-//             !newParent.contains(ship) &&
-//             !newParent.classList.contains("blocked") &&
-//             !newParent.classList.contains("occupy")
-//           ) {
-//             previousParent.removeChild(ship);
-//             newParent.append(ship);
-//           }
-//           previousParent = newParent;
-//         }
-//       });
-//     });
-//   });
-// }
+//ship drag event listeners
+function handleDragOver(e) {
+  e.preventDefault();
+}
 
+function handleDrop(e) {
+  e.preventDefault();
+  const targetCell = e.target;
+  const droppedShip = document.querySelector(".dragging");
+  if (
+    !targetCell.classList.contains("ship") &&
+    !targetCell.classList.contains("blocked") &&
+    !targetCell.classList.contains("occupy")
+  ) {
+    targetCell.appendChild(droppedShip);
+  }
+}
+
+// Attach the event listeners to each cell
+cells.forEach((cell) => {
+  cell.addEventListener("dragover", handleDragOver);
+  cell.addEventListener("drop", handleDrop);
+});
+
+// Call the shipPlacement function for each ship
 function shipPlacement(ship) {
-  cells.forEach((cell) => {
-    cell.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-    cell.addEventListener("drop", (e) => {
-      e.preventDefault();
-      let newParent = e.target;
-      if (
-        newParent !== ship.parentNode &&
-        !newParent.contains(ship) &&
-        !newParent.classList.contains("blocked") &&
-        !newParent.classList.contains("occupy")
-      ) {
-        ship.parentNode.removeChild(ship);
-        newParent.append(ship);
-        ship.parentNode = newParent;
-      }
-    });
+  ship.addEventListener("dragstart", () => {
+    ship.classList.add("dragging");
+  });
+  ship.addEventListener("dragend", () => {
+    ship.classList.remove("dragging");
   });
 }
 
